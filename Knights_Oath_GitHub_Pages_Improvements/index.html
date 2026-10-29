@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#20170f" />
+<meta name="description" content="NFC로 접속해 바로 플레이하는 모바일 3D 중세 기사 액션 게임." />
+<title>기사의 서약 — 중세 3D 액션 어드벤처</title>
+<style>
+:root{color-scheme:dark;--gold:#f4c66a;--gold2:#ffe3a0;--panel:rgba(27,22,17,.84);--line:rgba(239,200,126,.35);--red:#ed5a52;--green:#69e19b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#17140f;color:#fff4df;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;touch-action:none;user-select:none}canvas{display:block;width:100%;height:100%;touch-action:none}#game{position:fixed;inset:0}#hud{position:fixed;inset:0;pointer-events:none;padding:calc(10px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));display:flex;flex-direction:column;justify-content:space-between;gap:8px}.top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.brand,.stat,.objective{background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(10px);box-shadow:0 8px 28px #0005}.brand{padding:9px 12px;border-radius:13px;max-width:58vw}.brand strong{display:block;letter-spacing:.04em;font-size:clamp(14px,3.8vw,18px);color:var(--gold2)}.brand small{color:#d0b98d;font-size:9px;letter-spacing:.06em}.stats{display:flex;flex-direction:column;gap:5px;align-items:stretch}.stat{border-radius:10px;padding:6px 9px;font-size:10px;min-width:116px}.stat .line{display:flex;justify-content:space-between;gap:8px;align-items:center}.stat b{color:#fff3d2}.bar{height:6px;background:#382e24;border:1px solid #796045;border-radius:6px;overflow:hidden;margin-top:4px}.bar span{display:block;height:100%;width:100%;background:linear-gradient(90deg,#50c779,#a5ed8a);transition:width .14s}.bar.enemy span{background:linear-gradient(90deg,#d64d42,#ff9b72)}.bar.boss span{background:linear-gradient(90deg,#a8162c,#ff6a55)}#bossStat{min-width:140px;border-color:#b8434c}.bottom{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}.objective{font-size:11px;line-height:1.5;padding:9px 11px;border-radius:12px;max-width:min(58vw,300px);color:#f6e5c8}.objective b{color:var(--gold)}.controls{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;width:100%;pointer-events:none}.stick-wrap{pointer-events:auto;width:clamp(104px,28vw,142px);height:clamp(104px,28vw,142px);flex:0 0 auto;position:relative;touch-action:none}.stick-base{position:absolute;inset:0;border-radius:50%;border:1px solid #edcf8a88;background:radial-gradient(circle,#59452f99,#19140dbb 74%);box-shadow:inset 0 0 26px #f5bd4a16,0 0 24px #0004}.stick-knob{position:absolute;left:50%;top:50%;width:42%;height:42%;margin:-21% 0 0 -21%;border-radius:50%;border:1px solid #fff0c5;background:linear-gradient(145deg,#ffedb9,#ad7938);box-shadow:0 0 18px #f5bd4a44;transform:translate(0,0)}.actions{pointer-events:auto;display:flex;align-items:flex-end;gap:clamp(8px,2.6vw,14px);padding-bottom:4px}.action{width:clamp(62px,17vw,82px);height:clamp(62px,17vw,82px);border-radius:50%;border:1px solid #e5c88b;color:#fff5dd;font-weight:850;font-size:12px;letter-spacing:.01em;background:radial-gradient(circle at 35% 25%,#776044f2,#2d2116f5 75%);box-shadow:0 0 22px #0006,inset 0 0 12px #ffe2a020;touch-action:none}.action.attack{width:clamp(76px,20vw,94px);height:clamp(76px,20vw,94px);background:radial-gradient(circle at 35% 25%,#ba7330,#5b2b19 78%);font-size:12px}.action:active{transform:scale(.94);filter:brightness(1.25)}.action.run{width:clamp(50px,14vw,64px);height:clamp(50px,14vw,64px);font-size:11px;background:radial-gradient(circle at 35% 25%,#66543c,#2b2419 78%)}.action.run.active{border-color:#a7ed9f;color:#eaffdf;background:radial-gradient(circle at 35% 25%,#4e8c4a,#23422a 78%);box-shadow:0 0 22px #65e68c44,inset 0 0 12px #c4ffc520}.right-label{text-align:center;color:#ecd3a6;font-size:9px;margin-top:5px;text-shadow:0 1px 4px #000}.action-col{display:flex;flex-direction:column;align-items:center}.overlay{position:fixed;inset:0;z-index:4;display:flex;align-items:center;justify-content:center;padding:22px;background:radial-gradient(ellipse at center,#51371c99,#090806ed);backdrop-filter:blur(8px)}.modal{width:min(520px,100%);padding:clamp(22px,6vw,34px);border:1px solid #e4be6a77;border-radius:23px;background:linear-gradient(145deg,#332516f2,#15100cf7);box-shadow:0 24px 90px #000b;text-align:center}.logo{font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:900}.modal h1{font-size:clamp(30px,8vw,44px);line-height:1.08;margin:12px 0 10px}.modal p{color:#d5c2a2;font-size:14px;line-height:1.65;margin:10px 0 20px}.primary{width:100%;border:1px solid #ffe2a2;border-radius:14px;padding:15px 18px;font-weight:900;font-size:15px;color:#261706;background:linear-gradient(90deg,#ffe5a3,#c58a3a);box-shadow:0 8px 24px #dba74a2b}.subnote{font-size:11px!important;color:#b49a71!important;margin:12px 0 0!important}.chiprow{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin:14px 0 20px}.chiprow span{font-size:11px;padding:6px 9px;border:1px solid #9c774955;border-radius:999px;color:#ffedc6;background:#241a10}.toast{position:fixed;z-index:3;top:24%;left:50%;transform:translate(-50%,-8px);border:1px solid #efc978aa;background:#20160fea;color:#ffe8b8;padding:10px 16px;border-radius:12px;font-size:13px;font-weight:800;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;text-align:center;max-width:85vw}.toast.show{opacity:1;transform:translate(-50%,0)}#pause{pointer-events:auto;border:1px solid var(--line);border-radius:10px;background:#241b12e8;color:#ffedcf;padding:7px 9px;font-size:11px}.hidden{display:none!important}@media(min-width:800px){.brand{padding:12px 16px}.objective{font-size:13px;max-width:320px}.stat{font-size:12px;min-width:150px}.stick-wrap{width:142px;height:142px}.action{width:78px;height:78px}.action.attack{width:92px;height:92px}}@media(max-width:390px){.actions{gap:6px}.action{width:54px;height:54px;font-size:10px}.action.attack{width:67px;height:67px}.action.run{width:48px;height:48px}.right-label{font-size:8px}}@media(orientation:portrait){.top{align-items:flex-start}.brand{max-width:48vw}.stats{gap:4px}.objective{max-width:54vw}.controls{position:absolute;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom));padding:0 14px}.bottom{display:block}.bottom>.objective{position:absolute;left:14px;bottom:152px}}
+</style>
+</head>
+<body>
+<div id="game"></div>
+<div id="hud">
+  <div class="top">
+    <div class="brand"><strong>⚔ 기사의 서약</strong><small>MEDIEVAL REALMS · MOBILE 3D</small></div>
+    <div style="display:flex;gap:6px;align-items:flex-start"><div class="stats"><div class="stat"><div class="line">STAGE <b id="stageText">01 / 12</b></div><div id="themeText" style="color:#d1b78a;font-size:10px;margin-top:2px">왕국의 숲</div></div><div class="stat"><div class="line"><span>기사 체력</span><b id="hpText">100 / 100</b></div><div class="bar"><span id="hpBar"></span></div></div><div class="stat"><div class="line"><span>LV <b id="levelText">1</b></span><span>유물 <b id="dataText">0</b></span></div></div><div class="stat hidden" id="bossStat"><div class="line"><span id="bossName">마왕</span><b id="bossHpText">100%</b></div><div class="bar boss"><span id="bossHpBar"></span></div></div></div><button id="pause">Ⅱ</button></div>
+  </div>
+  <div class="bottom"><div class="objective"><b id="missionTitle">제1장 · 왕국의 숲</b><br><span id="missionText">도적들을 물리치고 숲길을 되찾으세요.</span></div></div>
+  <div class="controls">
+    <div class="stick-wrap" id="stick"><div class="stick-base"></div><div class="stick-knob" id="knob"></div></div>
+    <div class="actions"><div class="action-col"><button class="action" id="dash">구르기</button><div class="right-label">회피</div></div><div class="action-col"><button class="action run" id="run" aria-pressed="false">달리기</button><div class="right-label">속도 ON/OFF</div></div><div class="action-col"><button class="action attack" id="attack">⚔<br>검 휘두르기</button><div class="right-label">근접 베기</div></div></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="overlay" id="intro"><div class="modal"><div class="logo">NFC ACCESS · WEB ADVENTURE</div><h1>기사의 서약<br><span style="color:var(--gold)">왕국을 구하라</span></h1><p>몰락한 중세 왕국에 어둠이 퍼지고 있다.<br>기사의 검과 방패로 도적과 괴물을 물리치고<br>마지막에는 마왕을 쓰러뜨려라.</p><div class="chiprow"><span>12개 스테이지</span><span>3D 추적 카메라</span><span>묵직한 검 휘두르기</span><span>실제 구르기</span><span>최종 보스</span></div><button class="primary" id="start">모험 시작</button><p class="subnote">왼쪽 조이스틱으로 이동 · 달리기 버튼으로 질주 · 검 버튼으로 묵직하게 베기 · 구르기로 회피<br>조금 서툴지만 포기하지 않는 기사의 모험 · 앱 설치 없이 플레이</p></div></div>
+<div class="overlay hidden" id="pauseOverlay"><div class="modal"><div class="logo">PAUSED · 모험 일시 정지</div><h1>잠시 쉬어가기</h1><p>기사는 숨을 고르고 다음 전투를 준비한다.</p><button class="primary" id="resume">모험 계속하기</button><p class="subnote">진행도는 이 기기의 브라우저에 자동 저장돼.</p></div></div>
+<div class="overlay hidden" id="deathOverlay"><div class="modal"><div class="logo">A HUMBLE RETREAT</div><h1>기사가 쓰러졌다…</h1><p>이번 장의 시작 지점으로 돌아갑니다.<br>적들의 체력도 모두 회복됩니다.</p><p class="subnote">잠시 후 같은 스테이지를 처음부터 다시 시작해.</p></div></div>
+<div class="overlay hidden" id="endOverlay"><div class="modal"><div class="logo">QUEST COMPLETE</div><h1 id="endTitle">스테이지 완료!</h1><p id="endText">왕국의 길이 조금 더 안전해졌다.</p><button class="primary" id="next">다음 스테이지</button><p class="subnote">같은 브라우저에서는 진행 상황이 저장돼.</p></div></div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js';
+
+const $=id=>document.getElementById(id);
+const stages=[
+ {name:'왕국의 숲',zone:'THE KINGDOM WOODS',sky:0x748b6c,ground:0x536a3b,accent:0x6b8b43,stone:0x777866,enemy:3,type:'bandit'},
+ {name:'버려진 마을',zone:'ABANDONED VILLAGE',sky:0x8d8069,ground:0x74634b,accent:0x9d865e,stone:0x777064,enemy:4,type:'bandit'},
+ {name:'도적 소굴',zone:'BANDIT HIDEOUT',sky:0x63513e,ground:0x4c392b,accent:0xb17a43,stone:0x75604a,enemy:5,type:'bandit'},
+ {name:'해골 묘지',zone:'THE BONE GRAVEYARD',sky:0x5e6470,ground:0x3f4149,accent:0xafa78a,stone:0x696a70,enemy:5,type:'skeleton',miniBoss:true},
+ {name:'늑대 계곡',zone:'WOLF VALLEY',sky:0x8b9a88,ground:0x59614b,accent:0x9b9d85,stone:0x6c7166,enemy:6,type:'wolf'},
+ {name:'고블린 동굴',zone:'GOBLIN CAVES',sky:0x504956,ground:0x39313a,accent:0x7f9a54,stone:0x6a6264,enemy:6,type:'goblin'},
+ {name:'얼어붙은 요새',zone:'FROSTFALL FORTRESS',sky:0x9eafbc,ground:0x687b87,accent:0xb4e0f0,stone:0x94a5ad,enemy:7,type:'skeleton'},
+ {name:'화산 협곡',zone:'VOLCANIC PASS',sky:0x714b42,ground:0x49302a,accent:0xe47b43,stone:0x6d4b40,enemy:7,type:'goblin',miniBoss:true},
+ {name:'저주받은 성채',zone:'CURSED CITADEL',sky:0x4c4758,ground:0x302a3b,accent:0xa283b9,stone:0x5e5668,enemy:8,type:'skeleton'},
+ {name:'그림자 숲',zone:'SHADOW FOREST',sky:0x34493f,ground:0x25382b,accent:0x5c8152,stone:0x4b594b,enemy:8,type:'goblin'},
+ {name:'왕의 길',zone:'THE KING’S ROAD',sky:0x8a7560,ground:0x675540,accent:0xd1aa60,stone:0x93826a,enemy:9,type:'bandit'},
+ {name:'마왕성',zone:'DEMON KING’S CASTLE',sky:0x482b36,ground:0x2d1a22,accent:0xd94c48,stone:0x59404a,enemy:9,type:'demon',finalBoss:true}
+];
+const saved=(()=>{try{return JSON.parse(localStorage.getItem('knightsOathSave')||'{}')}catch{return {}}})();
+let stageIndex=Math.min(11,Math.max(0,(saved.stage||1)-1)),level=saved.level||1,xp=saved.xp||0,data=saved.data||0,hp=saved.hp||100,maxHp=saved.maxHp||100,playing=false,paused=false,cleared=false,attackTimer=0,attackCooldown=0,dashTimer=0,invuln=0,toastTimer=0,elapsed=0;
+let playerHitTimer=0,playerHitDirection=new THREE.Vector3(),deathPending=false,runningEnabled=false;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x748b6c);scene.fog=new THREE.Fog(0x748b6c,22,48);
+const camera=new THREE.PerspectiveCamera(57,innerWidth/innerHeight,.1,120);camera.position.set(0,5,-16);camera.lookAt(0,1,0);
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=false;renderer.outputColorSpace=THREE.SRGBColorSpace;$('game').appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xffe8ca,0x292b23,2.15));const sun=new THREE.DirectionalLight(0xffe2b5,2.3);sun.position.set(-4,12,-5);scene.add(sun);const fillLight=new THREE.DirectionalLight(0xc4d9ff,.55);fillLight.position.set(5,6,8);scene.add(fillLight);
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(58,58),new THREE.MeshStandardMaterial({color:0x536a3b,roughness:1}));ground.rotation.x=-Math.PI/2;ground.position.y=-.52;scene.add(ground);
+const player=new THREE.Group();scene.add(player);let knightPose=null,knightVisual=null,swordPivot=null,knightBody=null,knightCape=null,knightShield=null,knightLeftLeg=null,knightRightLeg=null,knightLeftArm=null,knightRightArm=null;
+let rollActive=false,rollElapsed=0,rollDuration=.78,rollDirection=new THREE.Vector3(0,0,1),rollDistance=2.55,attackHitDone=false;
+const attackDuration=.72;
+const enemies=[],shards=[],effects=[];let portal=null,stageObjects=new THREE.Group();scene.add(stageObjects);
+function mat(color,roughness=.72,metalness=0,emissive=0x000000){return new THREE.MeshStandardMaterial({color,roughness,metalness,emissive,emissiveIntensity:emissive?0.45:0})}
+function addMesh(parent,geometry,material,position,rotation){const m=new THREE.Mesh(geometry,material);m.position.set(...position);if(rotation)m.rotation.set(...rotation);parent.add(m);return m}
+function showToast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),1550)}
+function save(){try{localStorage.setItem('knightsOathSave',JSON.stringify({stage:stageIndex+1,level,xp,data,hp,maxHp}))}catch{}}
+function disposeObject(obj){if(!obj)return;obj.traverse?.(n=>{n.geometry?.dispose?.();if(n.material){if(Array.isArray(n.material))n.material.forEach(m=>m.dispose());else n.material.dispose()}});}
+function disposeStage(){for(const e of enemies){scene.remove(e.mesh);scene.remove(e.bar);disposeObject(e.mesh);disposeObject(e.bar)}enemies.length=0;for(const sh of shards){scene.remove(sh.mesh);disposeObject(sh.mesh)}shards.length=0;for(const fx of effects){scene.remove(fx.mesh);disposeObject(fx.mesh)}effects.length=0;if(portal){scene.remove(portal);disposeObject(portal);portal=null}scene.remove(stageObjects);disposeObject(stageObjects);stageObjects=new THREE.Group();scene.add(stageObjects)}
+
+// Low-poly knight assembled from primitives so the web game needs no downloaded character assets.
+function buildKnight(){
+ while(player.children.length){const child=player.children.pop();child.parent=null;disposeObject(child)}
+ // The pose pivot sits around the knight's centre, so a roll is a real body rotation, not a position jump.
+ knightPose=new THREE.Group();knightPose.position.y=1;player.add(knightPose);knightVisual=new THREE.Group();knightVisual.position.y=-1;knightPose.add(knightVisual);
+ const steel=mat(0x8e9aa5,.35,.68),steelDark=mat(0x424b55,.48,.55),gold=mat(0xd9a84b,.38,.55),red=mat(0x702d2e,.86),leather=mat(0x4d3020,.78),ivory=mat(0xd8d0b8,.6),visorMat=mat(0x1b2428,.45,.25),blue=mat(0x294f7a,.55,.15);
+ // Jointed legs: they wobble a little while walking instead of sliding like a toy on rails.
+ for(const side of [-1,1]){const leg=new THREE.Group();leg.position.set(side*.22,.54,0);knightVisual.add(leg);if(side<0)knightLeftLeg=leg;else knightRightLeg=leg;addMesh(leg,new THREE.BoxGeometry(.25,.48,.29),steelDark,[0,-.23,0]);addMesh(leg,new THREE.BoxGeometry(.29,.18,.38),leather,[0,-.45,.06],[0,side===1?.08:-.035,side*.045]);addMesh(leg,new THREE.BoxGeometry(.29,.12,.31),steel,[0,-.01,0]);}
+ // Back cape and armored torso. The plate is a little bulbous and mismatched, but the world remains polished.
+ knightCape=addMesh(knightVisual,new THREE.BoxGeometry(.59,.78,.12),red,[0,.97,-.24],[.15,0,0]);knightCape.rotation.x=.12;
+ knightBody=addMesh(knightVisual,new THREE.BoxGeometry(.65,.69,.4),steel,[0,1.02,0]);addMesh(knightVisual,new THREE.SphereGeometry(.30,8,7),steel,[0,.91,.155]);addMesh(knightVisual,new THREE.BoxGeometry(.43,.08,.035),gold,[0,1.18,.218]);addMesh(knightVisual,new THREE.BoxGeometry(.1,.32,.035),gold,[0,1.0,.221]);
+ addMesh(knightVisual,new THREE.BoxGeometry(.69,.12,.43),steelDark,[0,.65,0]);addMesh(knightVisual,new THREE.BoxGeometry(.48,.09,.43),leather,[0,.59,0]);
+ // Arms rotate at the shoulders; the shield and sword are attached to their hands.
+ for(const side of [-1,1]){const arm=new THREE.Group();arm.position.set(side*.49,1.16,.02);knightVisual.add(arm);if(side<0)knightLeftArm=arm;else knightRightArm=arm;addMesh(arm,new THREE.SphereGeometry(.22,8,6),steel,[0,.15,-.01]);addMesh(arm,new THREE.BoxGeometry(.19,.42,.22),steel,[0,-.14,0],[0,0,side*.08]);addMesh(arm,new THREE.BoxGeometry(.22,.16,.24),steelDark,[side*.02,-.37,.06]);}
+ // A slightly oversized, crooked helmet gives the hero a humble, endearingly awkward silhouette.
+ const helmet=new THREE.Group();helmet.position.set(0,1.62,0);helmet.rotation.set(.035,0,-.105);knightVisual.add(helmet);
+ addMesh(helmet,new THREE.SphereGeometry(.31,9,7),steel,[0,.055,0]);addMesh(helmet,new THREE.ConeGeometry(.32,.26,6),steel,[0,.265,.015]);addMesh(helmet,new THREE.BoxGeometry(.43,.2,.31),steel,[0,-.015,.12]);addMesh(helmet,new THREE.BoxGeometry(.29,.045,.025),visorMat,[0,.02,.285]);addMesh(helmet,new THREE.BoxGeometry(.37,.06,.04),gold,[0,-.13,.27]);addMesh(helmet,new THREE.BoxGeometry(.075,.34,.08),red,[.035,.38,-.01],[-.18,0,-.19]);
+ // One tiny rivet is intentionally a little off-centre, like a repaired hand-me-down helmet.
+ addMesh(helmet,new THREE.SphereGeometry(.035,6,5),gold,[-.16,.09,.294]);
+ // Shield on the left arm
+ knightShield=new THREE.Group();knightShield.position.set(-.15,-.27,.15);knightShield.rotation.z=-.18;knightLeftArm.add(knightShield);addMesh(knightShield,new THREE.BoxGeometry(.4,.58,.13),blue,[0,0,0]);addMesh(knightShield,new THREE.BoxGeometry(.08,.46,.145),gold,[0,0,.012]);addMesh(knightShield,new THREE.BoxGeometry(.3,.07,.145),gold,[0,.02,.013]);
+ // The sword is slightly too big for this underconfident knight, so the swing has a visible wind-up and recovery.
+ swordPivot=new THREE.Group();swordPivot.position.set(.12,-.23,.13);knightRightArm.add(swordPivot);swordPivot.rotation.z=-.48;
+ addMesh(swordPivot,new THREE.CylinderGeometry(.045,.05,.23,8),leather,[0,.02,0]);addMesh(swordPivot,new THREE.BoxGeometry(.39,.055,.075),gold,[0,.15,0]);addMesh(swordPivot,new THREE.BoxGeometry(.13,.66,.04),steel,[0,.50,0]);addMesh(swordPivot,new THREE.ConeGeometry(.065,.18,4),steel,[0,.92,0]);addMesh(swordPivot,new THREE.BoxGeometry(.06,.11,.06),gold,[0,.1,0]);
+ const footGlow=addMesh(knightVisual,new THREE.CircleGeometry(.47,24),new THREE.MeshBasicMaterial({color:0xe5b95b,transparent:true,opacity:.12,side:THREE.DoubleSide}),[0,-.48,0],[-Math.PI/2,0,0]);footGlow.renderOrder=1;
+}
+buildKnight();
+function makeHumanoidEnemy(type,boss=false,finalBoss=false){
+ const g=new THREE.Group();const s=finalBoss?1.75:boss?1.27:1;g.scale.setScalar(s);
+ const darkSteel=mat(finalBoss?0x331b2a:boss?0x51413c:0x56463a,.65,.25),cloth=mat(type==='bandit'?0x613b2c:type==='goblin'?0x45653b:type==='wolf'?0x57534e:type==='demon'?0x6c252c:0x77736c,.88),skin=mat(type==='goblin'?0x739044:type==='wolf'?0x665d54:type==='skeleton'?0xd7cfb4:type==='demon'?0x8c3b40:0xb88962,.8),bone=mat(0xd4ceb8,.65),black=mat(0x211b1b,.55),redEye=mat(0xe23b2c,.3,.1,0x9b1512),metal=mat(0x8f7770,.42,.45),gold=mat(0xb78b43,.45,.4);
+ if(type==='wolf'){
+  addMesh(g,new THREE.BoxGeometry(.75,.42,1.05),cloth,[0,.55,0]);addMesh(g,new THREE.SphereGeometry(.27,8,6),skin,[0,.82,.55]);addMesh(g,new THREE.ConeGeometry(.13,.32,5),skin,[.17,1.05,.52],[.2,0,-.3]);addMesh(g,new THREE.ConeGeometry(.13,.32,5),skin,[-.17,1.05,.52],[.2,0,.3]);addMesh(g,new THREE.BoxGeometry(.18,.14,.28),black,[0,.72,.79]);for(const x of [-.25,.25])for(const z of [-.28,.32])addMesh(g,new THREE.BoxGeometry(.16,.42,.17),cloth,[x,.23,z],[.12,0,0]);
+ }else if(type==='skeleton'){
+  addMesh(g,new THREE.BoxGeometry(.4,.54,.25),darkSteel,[0,.92,0]);addMesh(g,new THREE.BoxGeometry(.34,.15,.28),bone,[0,1.43,.02]);addMesh(g,new THREE.SphereGeometry(.23,9,7),bone,[0,1.65,.03]);addMesh(g,new THREE.BoxGeometry(.26,.07,.06),black,[0,1.64,.24]);for(const x of [-.075,.075])addMesh(g,new THREE.SphereGeometry(.045,6,6),redEye,[x,1.65,.28]);addMesh(g,new THREE.BoxGeometry(.45,.07,.07),bone,[0,1.0,.17]);for(const side of [-1,1]){addMesh(g,new THREE.BoxGeometry(.11,.48,.12),bone,[side*.26,1.0,0],[0,0,side*.12]);addMesh(g,new THREE.BoxGeometry(.11,.43,.12),bone,[side*.12,.32,0]);}addMesh(g,new THREE.BoxGeometry(.1,.5,.1),metal,[.43,1.05,.08],[0,0,-.2]);addMesh(g,new THREE.BoxGeometry(.22,.18,.12),metal,[.43,1.33,.08]);
+ }else if(type==='goblin'){
+  addMesh(g,new THREE.BoxGeometry(.53,.6,.38),cloth,[0,.91,0]);addMesh(g,new THREE.SphereGeometry(.28,8,7),skin,[0,1.5,.02]);addMesh(g,new THREE.ConeGeometry(.14,.38,5),skin,[.34,1.52,0],[0,0,-.85]);addMesh(g,new THREE.ConeGeometry(.14,.38,5),skin,[-.34,1.52,0],[0,0,.85]);addMesh(g,new THREE.BoxGeometry(.35,.08,.045),black,[0,1.48,.26]);for(const x of [-.34,.34]){addMesh(g,new THREE.BoxGeometry(.16,.48,.16),skin,[x,1.0,0]);addMesh(g,new THREE.BoxGeometry(.18,.43,.18),skin,[x*.65,.32,0]);}addMesh(g,new THREE.CylinderGeometry(.035,.045,.7,6),metal,[.48,.83,.18],[0,0,-.35]);addMesh(g,new THREE.ConeGeometry(.12,.2,5),metal,[.61,1.2,.18]);
+ }else if(type==='demon'){
+  addMesh(g,new THREE.BoxGeometry(.86,.94,.5),darkSteel,[0,1.25,0]);addMesh(g,new THREE.BoxGeometry(1.04,.2,.58),metal,[0,1.67,0]);addMesh(g,new THREE.SphereGeometry(.37,10,8),skin,[0,2.0,.02]);addMesh(g,new THREE.BoxGeometry(.47,.19,.15),darkSteel,[0,2.02,.18]);for(const x of [-.12,.12])addMesh(g,new THREE.SphereGeometry(.06,6,6),redEye,[x,2.05,.27]);for(const side of [-1,1]){addMesh(g,new THREE.ConeGeometry(.17,.55,6),metal,[side*.27,2.37,-.01],[0,0,side*.35]);addMesh(g,new THREE.BoxGeometry(.29,.68,.3),darkSteel,[side*.62,1.26,0],[0,0,side*.11]);addMesh(g,new THREE.BoxGeometry(.36,.26,.36),metal,[side*.64,.9,.08]);addMesh(g,new THREE.BoxGeometry(.23,.45,.22),darkSteel,[side*.22,.36,0]);}addMesh(g,new THREE.BoxGeometry(.12,.4,.08),skin,[0,1.45,.28]);addMesh(g,new THREE.BoxGeometry(.18,.11,.055),gold,[0,1.22,.27]);
+ }else{
+  // Hooded bandit (normal enemies are readable as human raiders)
+  addMesh(g,new THREE.BoxGeometry(.54,.64,.35),cloth,[0,.91,0]);addMesh(g,new THREE.BoxGeometry(.57,.14,.39),darkSteel,[0,1.2,0]);addMesh(g,new THREE.SphereGeometry(.25,9,7),skin,[0,1.52,.03]);addMesh(g,new THREE.ConeGeometry(.3,.25,7),darkSteel,[0,1.69,-.02]);addMesh(g,new THREE.BoxGeometry(.32,.09,.05),black,[0,1.5,.24]);for(const side of [-1,1]){addMesh(g,new THREE.BoxGeometry(.17,.47,.18),cloth,[side*.36,1.0,0],[0,0,side*.1]);addMesh(g,new THREE.BoxGeometry(.18,.44,.2),cloth,[side*.16,.32,0]);}addMesh(g,new THREE.BoxGeometry(.07,.62,.07),metal,[.48,.85,.1],[0,0,-.38]);addMesh(g,new THREE.BoxGeometry(.16,.18,.09),leatherSafe(),[.48,1.16,.1]);
+ }
+ if(boss){addMesh(g,new THREE.BoxGeometry(.75,.11,.09),gold,[0,finalBoss?2.65:2.08,.05]);}
+ return g;
+}
+function leatherSafe(){return mat(0x4c3021,.8)}
+function makeEnemyBar(){const group=new THREE.Group();const back=new THREE.Mesh(new THREE.PlaneGeometry(1.2,.105),new THREE.MeshBasicMaterial({color:0x21120f,side:THREE.DoubleSide,depthTest:false}));group.add(back);const fill=new THREE.Mesh(new THREE.PlaneGeometry(1.08,.06),new THREE.MeshBasicMaterial({color:0xc94538,side:THREE.DoubleSide,depthTest:false}));fill.position.z=.002;group.add(fill);fill.position.x=-.54;group.userData.fill=fill;group.renderOrder=20;group.traverse(n=>{if(n.isMesh)n.renderOrder=20});return group}
+function makeTree(x,z,scale=1){const g=new THREE.Group();const trunk=mat(0x503321,.92),leaf=mat([0x405b32,0x566c39,0x314e2b][Math.floor(Math.random()*3)],.95);addMesh(g,new THREE.CylinderGeometry(.12*scale,.2*scale,1.25*scale,6),trunk,[0,.1*scale,0]);addMesh(g,new THREE.ConeGeometry(.72*scale,1.65*scale,7),leaf,[0,1.15*scale,0]);addMesh(g,new THREE.ConeGeometry(.52*scale,1.3*scale,7),leaf,[0,1.9*scale,0]);g.position.set(x,0,z);stageObjects.add(g)}
+function makeRock(x,z,scale=1,color=0x777166){const r=addMesh(stageObjects,new THREE.DodecahedronGeometry(.6*scale,0),mat(color,.95),[x,.0,z]);r.scale.y=.65;r.rotation.set(Math.random(),Math.random(),Math.random())}
+function makeTorch(x,z){const g=new THREE.Group();addMesh(g,new THREE.CylinderGeometry(.07,.11,.95,6),mat(0x51351f),[0,.4,0]);addMesh(g,new THREE.ConeGeometry(.13,.32,6),new THREE.MeshStandardMaterial({color:0xffa33a,emissive:0xff5a12,emissiveIntensity:1.1}),[0,1.0,0]);g.position.set(x,0,z);stageObjects.add(g)}
+function makeDistantMountain(x,z,width,height,color,snowColor=null){
+ const base=-.52;const peak=addMesh(stageObjects,new THREE.ConeGeometry(width,height,7,1),mat(color,.99),[x,base+height/2,z]);peak.rotation.y=(Math.random()-.5)*.18;
+ if(snowColor){const cap=addMesh(stageObjects,new THREE.ConeGeometry(width*.48,height*.30,7,1),mat(snowColor,.92),[x,base+height*.79,z]);cap.rotation.y=peak.rotation.y+.08;}
+}
+function makeDistantCastle(x,z,scale,color,roofColor){
+ const g=new THREE.Group();const wall=mat(color,.98),roof=mat(roofColor,.93);
+ addMesh(g,new THREE.BoxGeometry(5.5*scale,4.7*scale,1.9*scale),wall,[0,2.35*scale,0]);
+ addMesh(g,new THREE.BoxGeometry(1.1*scale,6.2*scale,1.15*scale),wall,[-2.1*scale,3.05*scale,0]);
+ addMesh(g,new THREE.BoxGeometry(1.1*scale,6.8*scale,1.15*scale),wall,[2.1*scale,3.35*scale,0]);
+ addMesh(g,new THREE.BoxGeometry(1.25*scale,5.4*scale,1.25*scale),wall,[0,2.7*scale,.2*scale]);
+ for(const xx of [-2.1,0,2.1])addMesh(g,new THREE.ConeGeometry(.82*scale,1.6*scale,5),roof,[xx*scale,(xx===0?6.0:xx<0?6.3:6.8)*scale,0]);
+ g.position.set(x,-.52,z);stageObjects.add(g);
+}
+function makeDistantVillage(z,color){
+ const wall=mat(color,.98),roof=mat(0x574035,.96);
+ for(let i=0;i<7;i++){
+  const x=-17+i*5.5,h=1.6+(i%3)*.42,w=1.8+(i%2)*.45;
+  addMesh(stageObjects,new THREE.BoxGeometry(w,h,1.45),wall,[x,-.52+h/2,z+(i%2)*1.0]);
+  const top=addMesh(stageObjects,new THREE.ConeGeometry(w*.78,.95,4),roof,[x,-.52+h+.42,z+(i%2)*1.0]);top.rotation.y=Math.PI/4;
+ }
+}
+function makeDistantPines(z,baseColor){
+ for(let i=0;i<11;i++){const x=-24+i*4.8,scale=1.8+(i%4)*.35;makeTree(x,z+(i%3)*1.3,scale);}
+}
+function addDistantBackdrop(s){
+ // These silhouettes sit beyond the movement bounds; the knight cannot walk into them.
+ const foresty=[0,4,9].includes(stageIndex),snowy=stageIndex===6,volcanic=stageIndex===7,evil=[8,11].includes(stageIndex);
+ let ridge=s.stone,farRidge=s.ground,snow=snowy?0xdde9ef:stageIndex===0?0xb7c4b1:null;
+ if(stageIndex===0){ridge=0x657b62;farRidge=0x8b9b89;snow=0xc7d0c0;}
+ if(stageIndex===4){ridge=0x58654d;farRidge=0x83917b;snow=null;}
+ if(stageIndex===6){ridge=0x8ea3b3;farRidge=0xb9cbd5;snow=0xe9f2f7;}
+ if(volcanic){ridge=0x3c282a;farRidge=0x704039;snow=null;}
+ if(evil){ridge=0x342b3b;farRidge=0x52404a;snow=null;}
+ for(let i=0;i<9;i++){
+  const x=-27+i*6.8,z=21+(i%3)*2.4,w=4.8+(i%3)*.7,h=8.2+(i%4)*2.0;
+  makeDistantMountain(x,z,w,h,i%2?ridge:farRidge,(snow&&i%2===0)?snow:null);
+ }
+ // Lower ridge silhouettes create a continuous horizon on both sides of the play area.
+ for(const side of [-1,1])for(let i=0;i<4;i++)makeDistantMountain(side*(16+i*2.3),-9+i*7.2,3.3+i%2,6.2+(i%3)*1.5,farRidge,snowy?0xe5eff4:null);
+ if(stageIndex===1)makeDistantVillage(20,0x786b58);
+ if(stageIndex===2||stageIndex===5){
+  const caveMat=mat(stageIndex===5?0x29252e:0x47362b,.99);
+  addMesh(stageObjects,new THREE.BoxGeometry(8,5,2),caveMat,[0,1.9,21]);
+  addMesh(stageObjects,new THREE.BoxGeometry(4.6,3.8,2.2),mat(s.sky,.99),[0,1.5,20.0]);
+  for(const x of [-4.6,-3.2,3.2,4.6])addMesh(stageObjects,new THREE.DodecahedronGeometry(1.9,0),caveMat,[x,.1,20.4]);
+ }
+ if(foresty)makeDistantPines(18,stageIndex===9?0x263a2b:0x40583b);
+ if(stageIndex===7){
+  makeDistantMountain(-8,22,7,15,0x3a2928,null);makeDistantMountain(7,24,8,18,0x342325,null);
+  const lavaMat=new THREE.MeshStandardMaterial({color:0xff542e,emissive:0xd62610,emissiveIntensity:.75,roughness:.8});
+  for(const x of [-8,0,8])addMesh(stageObjects,new THREE.BoxGeometry(.22,.04,7),lavaMat,[x,-.46,17.7],[0,0,(x%2)*.04]);
+ }
+ if([8,10,11].includes(stageIndex))makeDistantCastle(stageIndex===10?4:0,stageIndex===10?23:25,stageIndex===11?1.35:.9,stageIndex===11?0x24151d:0x38313b,stageIndex===11?0x852b34:0x594357);
+ if(stageIndex===3){
+  for(let i=0;i<8;i++){const x=-19+i*5.4;addMesh(stageObjects,new THREE.BoxGeometry(.8,1.1+(i%3)*.3,.8),mat(0x68646b,.99),[x,-.02,19+(i%2)*2]);}
+ }
+ if(stageIndex===6){
+  const ice=mat(0x8ba4b2,.85,.1);for(let i=0;i<7;i++)addMesh(stageObjects,new THREE.ConeGeometry(.4+(i%2)*.35,2.1+(i%3)*.8,5),ice,[-17+i*5.4,-.52+(1.2+(i%3)*.4),17+(i%2)*1.8]);
+ }
+ if(stageIndex===10)makeDistantCastle(-5,24,.62,0x756653,0x9b8057);
+}
+function addStageScenery(s){
+ // Worn stone path and side tiles.
+ const roadMat=mat(s.stone,.98);for(let i=0;i<17;i++){const z=-12+i*1.45;const tile=addMesh(stageObjects,new THREE.BoxGeometry(2.5,.08,1.18),roadMat,[0,-.43,z]);tile.rotation.y=(Math.random()-.5)*.05;for(const side of [-1,1]){const t=addMesh(stageObjects,new THREE.BoxGeometry(.48,.07,1.1),roadMat,[side*1.5,-.43,z]);t.rotation.y=(Math.random()-.5)*.08}}
+ // Decorate the playable rim. Position clamps keep the knight inside the arena.
+ for(let i=0;i<22;i++){const a=i*Math.PI*2/22;const r=12.4+Math.random()*1.9;const x=Math.cos(a)*r,z=Math.sin(a)*r;if(stageIndex===6||stageIndex===11){makeRock(x,z,.85+Math.random()*.8,s.stone)}else if(i%3===0){makeRock(x,z,.65+Math.random()*.55,s.stone)}else{makeTree(x,z,.72+Math.random()*.7)}}
+ for(let i=0;i<8;i++){const side=i%2===0?-1:1;const z=-8+Math.floor(i/2)*5.2;const x=side*(6.7+(i%3)*1.1);if(stageIndex===11||stageIndex===8||stageIndex===3){const col=mat(s.stone,.85);addMesh(stageObjects,new THREE.BoxGeometry(.65,2.3,.65),col,[x,.65,z]);addMesh(stageObjects,new THREE.BoxGeometry(.92,.18,.92),col,[x,1.85,z]);}else if(i<6){makeTorch(x,z)}}
+ addDistantBackdrop(s);
+}
+function buildEnemyBar(e){e.bar=makeEnemyBar();scene.add(e.bar);}
+function buildStage(){
+ disposeStage();const s=stages[stageIndex];scene.background.setHex(s.sky);scene.fog.color.setHex(s.sky);ground.material.color.setHex(s.ground);player.position.set(0,0,-10);player.rotation.y=0;attackTimer=attackCooldown=dashTimer=invuln=playerHitTimer=0;rollActive=false;rollElapsed=0;attackHitDone=false;if(knightPose){knightPose.rotation.set(0,0,0);knightPose.position.y=1}if(swordPivot)swordPivot.rotation.set(0,0,-.48);if(knightBody)knightBody.rotation.set(0,0,0);if(knightShield)knightShield.rotation.set(0,0,-.18);if(knightLeftLeg)knightLeftLeg.rotation.set(0,0,0);if(knightRightLeg)knightRightLeg.rotation.set(0,0,0);if(knightLeftArm)knightLeftArm.rotation.set(0,0,0);if(knightRightArm)knightRightArm.rotation.set(0,0,0);addStageScenery(s);
+ const count=s.enemy;for(let i=0;i<count;i++){
+  const finalBoss=!!s.finalBoss&&i===count-1;const miniBoss=!!s.miniBoss&&i===count-1;const boss=finalBoss||miniBoss;let type=finalBoss?'demon':s.type;if(type==='wolf'&&i%2===0)type='bandit';
+  const g=makeHumanoidEnemy(type,boss,finalBoss);const angle=(i/count)*Math.PI*2+.25;const radius=3.8+(i%3)*1.5;g.position.set(Math.sin(angle)*radius,0,-1.2+Math.cos(angle)*radius*.76);scene.add(g);
+  const max=boss?(finalBoss?24:9):(type==='wolf'?3:2);const e={mesh:g,type,boss,finalBoss,hp:max,maxHp:max,speed:boss?(finalBoss?.72:.88):(type==='wolf'?2.15:1.15+Math.random()*.35),hit:0,stagger:0,wobble:Math.random()*Math.PI*2,attackTimer:0,attackDuration:finalBoss?.94:boss?.8:.68,attackCooldown:.35+Math.random()*.7,attackHitDone:false,attackStartPos:new THREE.Vector3(),attackDir:new THREE.Vector3(),bar:null};buildEnemyBar(e);enemies.push(e);
+ }
+ const shardCount=4+Math.min(stageIndex,5);for(let i=0;i<shardCount;i++){const coin=new THREE.Group();addMesh(coin,new THREE.CylinderGeometry(.22,.22,.065,12),mat(0xe6b548,.35,.7),[0,0,0],[Math.PI/2,0,0]);addMesh(coin,new THREE.CircleGeometry(.13,10),mat(0xffe39b,.4,.2),[0,0,.038]);coin.position.set((Math.random()-.5)*13,.46,-1+Math.random()*12);scene.add(coin);shards.push({mesh:coin,got:false,phase:Math.random()*6})}
+ portal=new THREE.Group();const ring=new THREE.Mesh(new THREE.TorusGeometry(1.02,.09,8,28),mat(s.accent,.28,.4,s.accent));ring.position.y=.6;portal.add(ring);const glow=new THREE.Mesh(new THREE.CircleGeometry(.82,24),new THREE.MeshBasicMaterial({color:s.accent,transparent:true,opacity:.22,side:THREE.DoubleSide}));glow.position.set(0,.6,0);portal.add(glow);portal.position.set(0,0,12.4);scene.add(portal);
+ $('stageText').textContent=String(stageIndex+1).padStart(2,'0')+' / 12';$('themeText').textContent=s.name;$('missionTitle').textContent='제'+(stageIndex+1)+'장 · '+s.name;$('missionText').textContent=s.finalBoss?'마왕을 쓰러뜨리고 왕국을 구하세요.':'도적과 몬스터를 물리치고 길을 되찾으세요.';$('bossStat').classList.toggle('hidden',!s.finalBoss&&!s.miniBoss);if(s.finalBoss||s.miniBoss){$('bossName').textContent=s.finalBoss?'마왕':'정예 괴물'}updateHUD();cleared=false;updateBossHUD();
+}
+function updateHUD(){$('hpText').textContent=Math.max(0,Math.ceil(hp))+' / '+maxHp;$('hpBar').style.width=Math.max(0,hp/maxHp*100)+'%';$('hpBar').style.background=hp/maxHp<.28?'linear-gradient(90deg,#b52626,#ff6f53)':'linear-gradient(90deg,#50c779,#a5ed8a)';$('levelText').textContent=level;$('dataText').textContent=data}
+function updateBossHUD(){const boss=enemies.find(e=>e.boss);$('bossStat').classList.toggle('hidden',!boss);if(boss){$('bossName').textContent=boss.finalBoss?'마왕':'정예 괴물';$('bossHpText').textContent=Math.max(0,Math.ceil(boss.hp))+' / '+boss.maxHp;$('bossHpBar').style.width=Math.max(0,boss.hp/boss.maxHp*100)+'%'}}
+function restartStageAfterDeath(){
+ if(deathPending)return;deathPending=true;hp=maxHp;save();playing=false;paused=false;$('pauseOverlay').classList.add('hidden');$('deathOverlay').classList.remove('hidden');
+ setTimeout(()=>{hp=maxHp;playerHitTimer=0;deathPending=false;$('deathOverlay').classList.add('hidden');buildStage();save();playing=true;paused=false;showToast('다시 도전! 적들의 체력도 모두 회복됐다.');},1150);
+}
+function updateRunButton(){const b=$('run');if(!b)return;b.classList.toggle('active',runningEnabled);b.setAttribute('aria-pressed',String(runningEnabled));b.textContent=runningEnabled?'달리기 ON':'달리기';}
+
+function gainXP(n){xp+=n;while(xp>=level*30){xp-=level*30;level++;maxHp+=10;hp=Math.min(maxHp,hp+25);showToast('레벨 업! · 기사 레벨 '+level)}save();updateHUD()}
+function spawnSlash(){const s=stages[stageIndex];const m=new THREE.Mesh(new THREE.TorusGeometry(1.0,.055,5,24,Math.PI*1.15),new THREE.MeshBasicMaterial({color:s.accent,transparent:true,opacity:.92,side:THREE.DoubleSide,depthWrite:false}));m.rotation.x=Math.PI/2;m.rotation.z=-Math.PI*.56;m.position.copy(player.position);const forward=new THREE.Vector3(Math.sin(player.rotation.y),0,Math.cos(player.rotation.y));m.position.addScaledVector(forward,1.15);m.position.y=.9;m.scale.set(.8,1,1);scene.add(m);effects.push({mesh:m,age:0,duration:.34})}
+function removeEnemy(e){scene.remove(e.mesh);scene.remove(e.bar);disposeObject(e.mesh);disposeObject(e.bar);enemies.splice(enemies.indexOf(e),1);data+=e.boss?5:1;gainXP(e.finalBoss?100:e.boss?35:12);showToast(e.finalBoss?'마왕을 쓰러뜨렸다!':e.boss?'정예 괴물 처치!':'적 처치! + 유물');updateBossHUD();if(enemies.length===0){$('missionText').textContent='길이 열렸다! 빛나는 관문까지 이동하세요.';showToast('모든 적을 처치했어! 관문으로 이동해.')}}
+function swingSword(){if(!playing||paused||rollActive||attackCooldown>0)return;attackTimer=attackDuration;attackCooldown=.86;attackHitDone=false;}
+function applySwordHit(){
+ attackHitDone=true;spawnSlash();const forward=new THREE.Vector3(Math.sin(player.rotation.y),0,Math.cos(player.rotation.y));let hitCount=0;
+ for(const e of [...enemies]){const offset=e.mesh.position.clone().sub(player.position);offset.y=0;const flatDist=offset.length();const dot=flatDist>0?forward.dot(offset.clone().normalize()):1;if(flatDist<3.1&&dot>.05){e.hp-=e.boss?2:1;e.hit=.22;e.stagger=.28;e.attackTimer=0;e.attackCooldown=Math.max(e.attackCooldown,.42);if(e.hp<=0)removeEnemy(e);else updateBossHUD();hitCount++}}
+ if(hitCount===0)showToast('검끝이 허공을 가른다… 조금 더 가까이!');
+}
+function roll(){
+ if(!playing||paused||rollActive||dashTimer>0)return;
+ let mx=-input.x+(moveKeys.a||moveKeys.arrowleft?1:0)-(moveKeys.d||moveKeys.arrowright?1:0);let my=-input.y+(moveKeys.w||moveKeys.arrowup?1:0)-(moveKeys.s||moveKeys.arrowdown?1:0);const d=new THREE.Vector3(mx,0,my);
+ if(d.length()<.15)d.set(Math.sin(player.rotation.y),0,Math.cos(player.rotation.y));d.normalize();rollDirection.copy(d);player.rotation.y=Math.atan2(d.x,d.z);
+ rollActive=true;rollElapsed=0;dashTimer=rollDuration;invuln=Math.max(invuln,.48);attackTimer=0;attackHitDone=true;
+ if(swordPivot)swordPivot.rotation.z=-.48;showToast('철퍽! 기사가 몸을 굴린다.');
+}
+const input={x:0,y:0};let moveKeys={};function setJoystick(clientX,clientY){const rect=$('stick').getBoundingClientRect(),cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;let dx=clientX-cx,dy=clientY-cy;const max=rect.width*.31;const len=Math.hypot(dx,dy);if(len>max){dx=dx/len*max;dy=dy/len*max}input.x=dx/max;input.y=dy/max;$('knob').style.transform=`translate(${dx}px,${dy}px)`}
+let stickPointer=null;$('stick').addEventListener('pointerdown',e=>{e.preventDefault();stickPointer=e.pointerId;$('stick').setPointerCapture(e.pointerId);setJoystick(e.clientX,e.clientY)});$('stick').addEventListener('pointermove',e=>{if(e.pointerId===stickPointer)setJoystick(e.clientX,e.clientY)});function endStick(e){if(e.pointerId===stickPointer){stickPointer=null;input.x=input.y=0;$('knob').style.transform='translate(0,0)'}}$('stick').addEventListener('pointerup',endStick);$('stick').addEventListener('pointercancel',endStick);$('stick').addEventListener('lostpointercapture',()=>{stickPointer=null;input.x=input.y=0;$('knob').style.transform='translate(0,0)'});
+$('attack').addEventListener('pointerdown',e=>{e.preventDefault();swingSword()});$('dash').addEventListener('pointerdown',e=>{e.preventDefault();roll()});$('run').addEventListener('click',()=>{runningEnabled=!runningEnabled;updateRunButton();showToast(runningEnabled?'달리기 시작!':'천천히 걷는다.')});window.addEventListener('keydown',e=>{const key=e.key.toLowerCase();if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(key))e.preventDefault();moveKeys[key]=true;if(e.key===' '||e.key==='Enter')swingSword();if(e.key==='Shift')roll();if(key==='r'&&!e.repeat){runningEnabled=!runningEnabled;updateRunButton()}});window.addEventListener('keyup',e=>moveKeys[e.key.toLowerCase()]=false);
+$('start').onclick=()=>{$('intro').classList.add('hidden');playing=true;paused=false;showToast('모험을 시작한다!')};$('pause').onclick=()=>{if(!playing)return;paused=true;$('pauseOverlay').classList.remove('hidden')};$('resume').onclick=()=>{paused=false;$('pauseOverlay').classList.add('hidden')};$('next').onclick=()=>{if(stageIndex<11)stageIndex++;else{stageIndex=0;level=1;xp=0;data=0;maxHp=100;hp=100}hp=Math.min(maxHp,hp+25);save();$('endOverlay').classList.add('hidden');playing=true;buildStage()};
+function finishStage(){if(cleared)return;cleared=true;playing=false;gainXP(20+stageIndex*4);save();$('endTitle').textContent=stageIndex===11?'마왕을 물리쳤다!':'제'+(stageIndex+1)+'장 클리어!';$('endText').textContent=stageIndex===11?'마왕성이 무너지고 왕국에 평화가 돌아왔다. 당신은 전설의 기사가 되었다!':'적을 물리치고 관문을 확보했다. 다음 지역으로 진군하자.';$('next').textContent=stageIndex===11?'새 모험 시작':'다음 장으로';$('endOverlay').classList.remove('hidden')}
+const clock=new THREE.Clock();let lastSaveAt=0;function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04);elapsed+=dt;const t=elapsed;
+ if(playing&&!paused){attackTimer=Math.max(0,attackTimer-dt);attackCooldown=Math.max(0,attackCooldown-dt);dashTimer=Math.max(0,dashTimer-dt);invuln=Math.max(0,invuln-dt);playerHitTimer=Math.max(0,playerHitTimer-dt);
+  // Movement stays stable; a roll translates continuously while the full body rotates around its centre.
+  let mx=-input.x+(moveKeys.a||moveKeys.arrowleft?1:0)-(moveKeys.d||moveKeys.arrowright?1:0);let my=-input.y+(moveKeys.w||moveKeys.arrowup?1:0)-(moveKeys.s||moveKeys.arrowdown?1:0);let direction=new THREE.Vector3(mx,0,my);const mag=direction.length();if(mag>1)direction.normalize();const sprinting=runningEnabled||moveKeys.control;const moveSpeed=sprinting?5.85:3.65;
+  if(rollActive){
+   rollElapsed+=dt;const p=Math.min(1,rollElapsed/rollDuration);player.position.addScaledVector(rollDirection,dt*(rollDistance/rollDuration));
+   if(knightPose){knightPose.rotation.x=Math.PI*2*p;knightPose.rotation.z=Math.sin(p*Math.PI*2)*.055;knightPose.position.y=1;}
+   if(p>=1){rollActive=false;dashTimer=0;if(knightPose){knightPose.rotation.set(0,0,0);knightPose.position.y=1;}}
+  }else{
+   if(mag>.06){player.position.addScaledVector(direction,dt*moveSpeed);const targetYaw=Math.atan2(direction.x,direction.z);const yawDelta=Math.atan2(Math.sin(targetYaw-player.rotation.y),Math.cos(targetYaw-player.rotation.y));player.rotation.y+=yawDelta*(1-Math.exp(-dt*7.5));}
+   if(knightPose)knightPose.position.y=1+(mag>.06?Math.abs(Math.sin(t*11.5))*.035:Math.sin(t*2.6)*.018);
+   if(knightPose)knightPose.rotation.set(0,0,0);
+  }
+  if(playerHitTimer>0&&!rollActive){player.position.addScaledVector(playerHitDirection,dt*(1.35*playerHitTimer/.42));}player.position.x=THREE.MathUtils.clamp(player.position.x,-11.4,11.4);player.position.z=THREE.MathUtils.clamp(player.position.z,-12.3,13.2);
+  if(!rollActive){const gait=mag>.06?Math.sin(t*(sprinting?15.5:10.5))*(sprinting?.43:.31):Math.sin(t*2.4)*.025;if(knightLeftLeg)knightLeftLeg.rotation.x=gait;if(knightRightLeg)knightRightLeg.rotation.x=-gait;if(knightLeftArm)knightLeftArm.rotation.x=mag>.06?-gait*(sprinting?.62:.45):Math.sin(t*2.4)*.015;if(knightRightArm&&attackTimer<=0)knightRightArm.rotation.x=mag>.06?gait*(sprinting?.5:.38):Math.sin(t*2.4)*.02;if(knightBody&&attackTimer<=0)knightBody.rotation.x=sprinting&&mag>.06?.075:0;}
+  if(swordPivot){if(attackTimer>0&&!rollActive){const p=THREE.MathUtils.clamp(1-attackTimer/attackDuration,0,1);if(p<.24){const q=p/.24;const eased=q*q*(3-2*q);swordPivot.rotation.z=THREE.MathUtils.lerp(-.48,-1.34,eased);swordPivot.rotation.x=-.05-.13*q;if(knightRightArm)knightRightArm.rotation.z=THREE.MathUtils.lerp(0,-.12,q);if(knightBody)knightBody.rotation.x=-.035*q;}else if(p<.66){const q=(p-.24)/.42;swordPivot.rotation.z=THREE.MathUtils.lerp(-1.34,1.02,q);swordPivot.rotation.x=-.18+Math.sin(q*Math.PI)*.23;if(knightRightArm)knightRightArm.rotation.z=THREE.MathUtils.lerp(-.12,.11,q);if(knightBody)knightBody.rotation.x=-.035+Math.sin(q*Math.PI)*.11;if(knightShield)knightShield.rotation.z=-.18-Math.sin(q*Math.PI)*.13;}else{const q=(p-.66)/.34;const eased=q*q*(3-2*q);swordPivot.rotation.z=THREE.MathUtils.lerp(1.02,-.48,eased);swordPivot.rotation.x=THREE.MathUtils.lerp(.02,0,eased);if(knightRightArm)knightRightArm.rotation.z=THREE.MathUtils.lerp(.11,0,eased);if(knightBody)knightBody.rotation.x=THREE.MathUtils.lerp(.06,0,eased);if(knightShield)knightShield.rotation.z=THREE.MathUtils.lerp(-.31,-.18,eased)}if(!attackHitDone&&p>=.43)applySwordHit();}else{swordPivot.rotation.z=THREE.MathUtils.damp(swordPivot.rotation.z,-.48,8,dt);swordPivot.rotation.x=THREE.MathUtils.damp(swordPivot.rotation.x,0,8,dt);if(knightRightArm)knightRightArm.rotation.z=THREE.MathUtils.damp(knightRightArm.rotation.z,0,7,dt);if(knightBody)knightBody.rotation.x=THREE.MathUtils.damp(knightBody.rotation.x,0,7,dt);if(knightShield)knightShield.rotation.z=THREE.MathUtils.damp(knightShield.rotation.z,-.18,7,dt)}}if(playerHitTimer>0&&!rollActive&&knightPose){const hitP=playerHitTimer/.42;knightPose.rotation.z=Math.sin((1-hitP)*Math.PI*8)*.075*hitP;if(knightBody)knightBody.rotation.x=.28*hitP;if(knightRightArm)knightRightArm.rotation.x=-.45*hitP;}else if(!rollActive&&knightPose&&knightPose.rotation.z!==0){knightPose.rotation.z=THREE.MathUtils.damp(knightPose.rotation.z,0,8,dt)}if(knightCape){knightCape.rotation.x=.1+Math.sin(t*(sprinting?11:6))*Math.min(sprinting?.3:.16,mag*.06)}
+  for(const e of [...enemies]){
+   const offset=player.position.clone().sub(e.mesh.position);offset.y=0;let d=offset.length();
+   const dir=d>.001?offset.clone().normalize():new THREE.Vector3(0,0,1);
+   e.attackCooldown=Math.max(0,e.attackCooldown-dt);
+   e.hit=Math.max(0,e.hit-dt);e.stagger=Math.max(0,(e.stagger||0)-dt);
+   const attackRange=e.finalBoss?2.05:e.boss?1.72:(e.type==='wolf'?1.45:1.42);
+   if(e.attackTimer<=0&&d>attackRange){
+    if(e.stagger<=0){e.mesh.position.addScaledVector(dir,dt*e.speed);e.mesh.rotation.y=Math.atan2(dir.x,dir.z)+Math.sin(t*3.7+e.wobble)*.035;}
+   }else if(e.attackTimer<=0&&e.attackCooldown<=0&&e.stagger<=0){
+    e.attackTimer=e.attackDuration;e.attackHitDone=false;e.attackStartPos.copy(e.mesh.position);e.attackDir.copy(dir);e.mesh.rotation.y=Math.atan2(dir.x,dir.z);e.attackCooldown=e.boss?1.42:1.12;
+   }
+   if(e.attackTimer>0){
+    e.attackTimer=Math.max(0,e.attackTimer-dt);const p=1-e.attackTimer/e.attackDuration;
+    // A readable tell: lean back, then commit to a short forward lunge, then stumble back to stance.
+    let lunge=0,lean=0;
+    if(p<.30){const q=p/.30;lunge=-.10*q;lean=-.18*q;}
+    else if(p<.58){const q=(p-.30)/.28;lunge=-.10+.78*(q*q*(3-2*q));lean=-.18+.46*q;}
+    else {const q=(p-.58)/.42;lunge=.68*(1-q);lean=.28*(1-q);}
+    e.mesh.position.copy(e.attackStartPos).addScaledVector(e.attackDir,lunge);
+    e.mesh.rotation.x=lean;
+    e.mesh.rotation.z=Math.sin(p*Math.PI*2)*.045;
+    if(!e.attackHitDone&&p>=.53){
+     e.attackHitDone=true;const currentDistance=e.mesh.position.distanceTo(player.position);
+     if(invuln<=0&&currentDistance<(e.finalBoss?2.55:e.boss?2.2:1.92)){
+      hp-=e.boss?(e.finalBoss?16:11):e.type==='wolf'?8:6;
+      playerHitTimer=.42;playerHitDirection.copy(player.position).sub(e.mesh.position);playerHitDirection.y=0;if(playerHitDirection.lengthSq()<.001)playerHitDirection.set(0,0,-1);playerHitDirection.normalize();
+      updateHUD();showToast(e.finalBoss?'마왕이 무거운 일격을 날렸다!':e.boss?'정예 괴물이 휘둘렀다!':'적의 공격에 휘청거렸다!');
+      if(hp<=0){hp=0;updateHUD();restartStageAfterDeath();break;}
+     }else if(invuln>0){showToast('구르기로 공격을 피했다!');}
+    }
+    if(e.attackTimer<=0){e.mesh.position.copy(e.attackStartPos);e.mesh.rotation.x=0;e.mesh.rotation.z=0;}
+   }else{
+    e.mesh.rotation.x=THREE.MathUtils.damp(e.mesh.rotation.x,0,7,dt);
+    e.mesh.rotation.z=THREE.MathUtils.damp(e.mesh.rotation.z,0,7,dt);
+   }
+   if(e.stagger>0){e.mesh.rotation.z+=Math.sin((.28-e.stagger)*34)*.095;}
+   const baseScale=e.finalBoss?1.75:e.boss?1.27:1;
+   if(e.hit>0)e.mesh.scale.setScalar(baseScale*1.045);else e.mesh.scale.setScalar(baseScale);
+   e.mesh.position.y=e.type==='wolf'?0:Math.abs(Math.sin(t*5.2+e.wobble))*.025;
+   const barHeight=e.finalBoss?4.7:e.boss?2.65:2.05;
+   e.bar.position.set(e.mesh.position.x,e.mesh.position.y+barHeight,e.mesh.position.z);e.bar.quaternion.copy(camera.quaternion);
+   const ratio=THREE.MathUtils.clamp(e.hp/e.maxHp,0,1);e.bar.userData.fill.scale.x=ratio;e.bar.userData.fill.position.x=-.54*(1-ratio);e.bar.visible=d<20;
+  }
+  for(const sh of shards){if(sh.got)continue;sh.mesh.rotation.y+=dt*1.7;sh.mesh.position.y=.46+Math.sin(t*2+sh.phase)*.12;if(sh.mesh.position.distanceTo(player.position)<1.05){sh.got=true;scene.remove(sh.mesh);data++;gainXP(5);updateHUD();showToast('왕국의 유물 조각 +1')}}
+  if(enemies.length===0&&portal&&portal.position.distanceTo(player.position)<2.15)finishStage();if(portal){portal.children[0].rotation.z=t*.55;portal.children[1].material.opacity=.16+Math.sin(t*2)*.06}
+  for(let i=effects.length-1;i>=0;i--){const fx=effects[i];fx.age+=dt;fx.mesh.scale.setScalar(.85+fx.age*2.8);fx.mesh.material.opacity=Math.max(0,1-fx.age/fx.duration);if(fx.age>fx.duration){scene.remove(fx.mesh);disposeObject(fx.mesh);effects.splice(i,1)}}
+  if(t-lastSaveAt>3){save();lastSaveAt=t}}
+ // Stable third-person follow camera: track the knight's position without orbiting
+ // around the character whenever the player changes facing direction.
+ const desiredCamera=new THREE.Vector3(player.position.x,player.position.y+5.35,player.position.z-8.7);camera.position.lerp(desiredCamera,1-Math.exp(-dt*4.2));const look=new THREE.Vector3(player.position.x,player.position.y+1.15,player.position.z);camera.lookAt(look);
+ renderer.render(scene,camera)}
+window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight)});window.addEventListener('contextmenu',e=>e.preventDefault());window.addEventListener('blur',()=>{if(playing){paused=true;$('pauseOverlay').classList.remove('hidden')}});
+updateRunButton();buildStage();animate();
+</script>
+</body>
+</html>
